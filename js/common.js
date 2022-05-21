@@ -3,7 +3,7 @@
 
 let width = 1030, height = 640, margin = { top: 20, right: 20, bottom: 20, left: 20 };
 let vt_space = 50;
-
+let r_max = 7;
 // let data = [{ year: 1977, value: 47 },
 // { year: 1978, value: 64 },
 // { year: 1975, value: 31 },
@@ -255,7 +255,9 @@ function createAvengersTimelineChart(data = dataList(), container, width, height
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var x = d3.scaleLinear()
-        .range([0, width - margin.left - margin.right]);
+            .domain([112, 181])
+            .range([r_max * 0.6, r_max]);
+        // .range([0, width - margin.left - margin.right]);
 
     /* .domain([112, 181])
         .range([r_max * 0.6, r_max])
@@ -270,8 +272,8 @@ function createAvengersTimelineChart(data = dataList(), container, width, height
     //     .y(function (d) { return y(d.value); });
 
     // console.log(data.movies.movie_release_date);
-    x.domain(d3.extent(data, function (d)  { return (d =>  d.movies.movie_release_date )}));
-    y.domain(d3.extent(data, function (d) { return d.value; }));
+    x.domain(d3.extent(data.movies, function (d)  { return d.movie_release_date }));
+    // y.domain(d3.extent(data, function (d) { return d.value; }));
 
     g.append("g")
         .attr("transform", "translate(0," + y(0) + ")")

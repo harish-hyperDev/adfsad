@@ -1,21 +1,25 @@
 // //create avengers timeline chart using d3.js
 // let container = d3.select(".container");
-let data = [{year: 1977, value: 47},
-            {year: 1978, value: 64},
-            {year: 1975, value: 31},
-            {year: 1981, value: 88},
-            {year: 1988, value: 33},
-            {year: 1973, value: 11},
-            {year: 1975, value: 1},
-            {year: 2004, value: 69},
-            {year: 1983, value: 3},
-            {year: 2003, value: 77},
-            {year: 2006, value: 57},
-            {year: 1993, value: 34},
-            {year: 1987, value: 80},
-            {year: 1979, value: 100},
-            {year: 1986, value: 83}
-            ];
+
+let width = 1030, height = 640, margin = { top: 20, right: 20, bottom: 20, left: 20 };
+let vt_space = 50;
+
+// let data = [{ year: 1977, value: 47 },
+// { year: 1978, value: 64 },
+// { year: 1975, value: 31 },
+// { year: 1981, value: 88 },
+// { year: 1988, value: 33 },
+// { year: 1973, value: 11 },
+// { year: 1975, value: 1 },
+// { year: 2004, value: 69 },
+// { year: 1983, value: 3 },
+// { year: 2003, value: 77 },
+// { year: 2006, value: 57 },
+// { year: 1993, value: 34 },
+// { year: 1987, value: 80 },
+// { year: 1979, value: 100 },
+// { year: 1986, value: 83 }
+// ];
 
 // Below is the copy of _data
 /** {
@@ -117,7 +121,7 @@ let data = [{year: 1977, value: 47},
             ] */
 
 
-function _data() {
+function dataList() {
     return (
         {
             movies: [
@@ -144,7 +148,7 @@ function _data() {
                 ({ movie_id: 21, movie_name: "Captain Marvel", movie_length: 143, movie_release_date: 2019, stones: [0, 0, 0, 0, 0, 0] }),
                 ({ movie_id: 22, movie_name: "Avengers: Endgame", movie_length: 181, movie_release_date: 2019, stones: [0, 0, 0, 0, 0, 0] })
             ],
-            
+
             linkes: [//Space Stone Next
                 ({ stone_id: 1, source_movie_id: 3, target_movie_id: 4, lk_note: "next" }),
                 ({ stone_id: 1, source_movie_id: 4, target_movie_id: 5, lk_note: "next" }),
@@ -220,8 +224,29 @@ function _data() {
     )
 }
 
+function xTimeScale(d3, w) {
+    return (
+        d3.scaleTime()
+            .domain([new Date(2008, 0, 1), new Date(2020, 0, 1)])
+            .range([0, w])
+    )
+}
 
-function createAvengersTimelineChart(data = _data(), container, width, height, margin) {
+
+function xAxis(margin, h, vt_space, d3, xTimeScale) {
+    return (
+        function (g) {
+            g
+                .attr("transform", `translate(${margin.left - 5},${h - vt_space + 20})`)
+                .call(d3.axisBottom(xTimeScale)
+                    .tickSize(10)
+                );
+        }
+    )
+}
+
+function createAvengersTimelineChart(data = dataList(), container, width, height, margin) {
+    data = dataList();
     var svg = d3.select(container).append("svg")
         .attr("width", width)
         .attr("height", height);
@@ -232,19 +257,20 @@ function createAvengersTimelineChart(data = _data(), container, width, height, m
     var x = d3.scaleLinear()
         .range([0, width - margin.left - margin.right]);
 
-        /* .domain([112, 181])
-            .range([r_max * 0.6, r_max])
-       */
+    /* .domain([112, 181])
+        .range([r_max * 0.6, r_max])
+   */
 
     var y = d3.scaleLinear()
         .range([height - margin.top - margin.bottom - 10, 0]);
 
-    var line = d3.line()
-        .x(function (d) { return x(d.year); })
-        .y(function (d) { return y(d.value); });
+    // Commented code is a line chart
+    // var line = d3.line()
+    //     .x(function (d) { return x(d.year); })
+    //     .y(function (d) { return y(d.value); });
 
     // console.log(data.movies.movie_release_date);
-    x.domain(d3.extent(data, function (d) { console.log(d.year); return d.year; }));
+    x.domain(d3.extent(data, function (d)  { return (d =>  d.movies.movie_release_date )}));
     y.domain(d3.extent(data, function (d) { return d.value; }));
 
     g.append("g")
@@ -252,9 +278,9 @@ function createAvengersTimelineChart(data = _data(), container, width, height, m
         .call(d3.axisBottom(x));
 
     // g.append("g")
-        // .call(d3.axisLeft(y));
+    // .call(d3.axisLeft(y));
 
- 
+
     // g.append("path")
     //     .datum(data)
     //     .attr("fill", "none")
@@ -264,6 +290,11 @@ function createAvengersTimelineChart(data = _data(), container, width, height, m
     //     .attr("stroke-width", 1.5)
     //     .attr("d", line);
 
+    g.append("g")
+        .attr("transform", `translate(${margin.left - 5},${height - vt_space + 20})`)
+        .call(d3.axisBottom(xTimeScale))
+        .tickSize(10);
+
     g.append("text")
         .attr("x", (width / 2))
         .attr("y", height - margin.bottom + 20)
@@ -271,7 +302,7 @@ function createAvengersTimelineChart(data = _data(), container, width, height, m
         .style("font-size", "16px")
         .style("text-decoration", "underline")
         .text("Avengers Timeline");
-        
+
     g.append("text")
         .attr("x", (width / 2))
         .attr("y", height - margin.bottom + 20)
@@ -281,13 +312,13 @@ function createAvengersTimelineChart(data = _data(), container, width, height, m
 
     //create legends on the above line chart
     //dont create any text fields instead create legend dots or circles on the line chart
-    
+
     g.append("circle")
         .attr("cx", width - margin.right - 20)
         .attr("cy", height - margin.bottom - 25)
         .attr("r", 5)
         .style("fill", "red");
-        
+
     g.append("text")
         .attr("x", width - margin.right - 20)
         .attr("y", height - margin.bottom - 20)
@@ -326,20 +357,20 @@ function createAvengersTimelineChart(data = _data(), container, width, height, m
 
     //         // When the user mouses over a node,
     //         // add interactive highlighting to see connections between nodes  
-      
+
     //         nodes.on('mouseover', function (d) {
-      
+
     //           //  highlight only the selected node
     //           d3.select(this).style("fill", "#F0131E");
     //           d3.select(this).style("stroke-width", 2);
     //           d3.select(this).style("stroke", "#FFFFFF");
-      
+
     //           // display name title
     //           rect.style("fill", "#F0131E");
     //           text.text(function (text_id) {
     //             return text_id.movie_id == d.movie_id ? text_id.movie_name : null
     //           })
-      
+
     //           // next, style the arcs      
     //           // the arc color and thickness stays as the default unless connected to the selected node d
     //           // notice how embedding the reference to arcs within nodes.on() allows the code to connect d to arcd
@@ -348,7 +379,7 @@ function createAvengersTimelineChart(data = _data(), container, width, height, m
     //             return arcd.source_movie_id === d.movie_id || arcd.target_movie_id === d.movie_id ? Stone_color(arcd) : '#D3D3D3';
     //           })
     //         });
-      
+
     //         nodes.on('mouseout', function (d) {
     //           rect.style("fill", "#BBBBBB");
     //           nodes.style("fill", "#BBBBBB");
@@ -357,11 +388,11 @@ function createAvengersTimelineChart(data = _data(), container, width, height, m
     //           arcs.style('stroke', '#D3D3D3');
     //           arcs.style('stroke-width', stroke_width);
     //         });
-      
+
     //       });
 }
 
-createAvengersTimelineChart(data, ".container", 600, 400, { top: 20, right: 20, bottom: 20, left: 20 });
+createAvengersTimelineChart(0, ".container", width, height, margin);
 
 
 

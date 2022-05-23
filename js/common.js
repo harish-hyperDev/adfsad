@@ -239,14 +239,163 @@ function xAxis(margin, h, vt_space, d3, xTimeScale) {
             g
                 .attr("transform", `translate(${margin.left - 5},${h - vt_space + 20})`)
                 .call(d3.axisBottom(xTimeScale)
-                    .tickSize(10)
-                );
+                        .tickSize(10)
+                    );
         }
     )
 }
 
-function createAvengersTimelineChart(data = dataList(), container, width, height, margin) {
-    data = dataList();
+// function createAvengersTimelineChart(data = dataList(), container, width, height, margin) {
+//     data = dataList();
+//     var svg = d3.select(container).append("svg")
+//         .attr("width", width)
+//         .attr("height", height);
+
+//     var g = svg.append("g")
+//         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        
+
+//     var x = d3.scaleLinear()
+//             .domain(d3.extent(data.movies, function (d)  { return d.movie_release_date }))
+//             .range([r_max * 0.6, r_max]);
+
+
+//     var y = d3.scaleLinear()
+//         .range([height - margin.top - margin.bottom - 10, 0]);
+
+//     // Commented code is a line chart
+//     // var line = d3.line()
+//     //     .x(function (d) { return x(d.year); })
+//     //     .y(function (d) { return y(d.value); });
+
+//     // console.log(data.movies.movie_release_date);
+//     x.domain(d3.extent(data.movies, function (d)  { return d.movie_release_date }));
+//     // y.domain(d3.extent(data, function (d) { return d.value; }));
+
+//     // g.append("g")
+//     //     .attr("transform", "translate(0," + y(0) + ")")
+//     //     .call(d3.axisBottom(x));
+
+//     // g.append("g")
+//     // .call(d3.axisLeft(y));
+
+
+//     // g.append("path")
+//     //     .datum(data)
+//     //     .attr("fill", "none")
+//     //     .attr("stroke", "steelblue")
+//     //     .attr("stroke-linejoin", "round")
+//     //     .attr("stroke-linecap", "round")
+//     //     .attr("stroke-width", 1.5)
+//     //     .attr("d", line);
+
+    
+//         // .tickSize(10);
+
+//     // g.attr("transform", `translate(${margin.left - 5},${height - vt_space + 20})`)
+//     //  .call(d3.axisBottom(xTimeScale))
+//     //  .tickSize(10);
+
+//     g.append("text")
+//         .attr("x", (width / 2))
+//         .attr("y", height - margin.bottom + 20)
+//         .attr("text-anchor", "middle")
+//         .style("font-size", "16px")
+//         .style("text-decoration", "underline")
+//         .text("Avengers Timeline");
+
+//     g.append("text")
+//         .attr("x", (width / 2))
+//         .attr("y", height - margin.bottom + 20)
+//         .attr("text-anchor", "middle")
+//         .style("font-size", "12px")
+//         .text("Year");
+
+//     //create legends on the above line chart
+//     //dont create any text fields instead create legend dots or circles on the line chart
+
+//     g.append("circle")
+//         .attr("cx", width - margin.right - 20)
+//         .attr("cy", height - margin.bottom - 25)
+//         .attr("r", 5)
+//         .style("fill", "red");
+
+//     g.append("text")
+//         .attr("x", width - margin.right - 20)
+//         .attr("y", height - margin.bottom - 20)
+//         .attr("text-anchor", "middle")
+//         .style("font-size", "12px")
+//         .text("Avengers Count");
+
+//     g.append("g")
+//         .attr("class", "legend legend--ordinal")
+//         .attr("transform", "translate(20,20)")
+//         .style("font-size", "12px")
+//         .style("font-family", "Impact, Charcoal, sans-serif");
+
+   
+// }
+
+// createAvengersTimelineChart(0, ".container", width, height, margin);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//create a json with random values with the columns "year" and "value"
+ // g.append("text")
+    //     .attr("transform", "rotate(-90)")
+    //     .attr("y", 0 - margin.left)
+    //     .attr("x", 0 - (height / 2))
+    //     .attr("dy", "1em")
+    //     .style("text-anchor", "middle")
+    //     .style("font-size", "12px")
+    //     .text("Avengers Count");
+
+    // g.append("text")
+    //     .attr("x", (width / 2))
+    //     .attr("y", height - margin.bottom + 60)
+    //     .attr("text-anchor", "middle")
+    //     .style("font-size", "12px")
+    //     .text("(Year - Avengers Count)");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function createAvengersTimelineChart(data, container, width, height, margin) {
     var svg = d3.select(container).append("svg")
         .attr("width", width)
         .attr("height", height);
@@ -255,86 +404,73 @@ function createAvengersTimelineChart(data = dataList(), container, width, height
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var x = d3.scaleLinear()
-            .domain([112, 181])
-            .range([r_max * 0.6, r_max]);
-        // .range([0, width - margin.left - margin.right]);
-
-    /* .domain([112, 181])
-        .range([r_max * 0.6, r_max])
-   */
+        .range([0, width - margin.left - margin.right]);
 
     var y = d3.scaleLinear()
         .range([height - margin.top - margin.bottom - 10, 0]);
 
-    // Commented code is a line chart
-    // var line = d3.line()
-    //     .x(function (d) { return x(d.year); })
-    //     .y(function (d) { return y(d.value); });
+    var line = d3.line()
+        .x(function (d) { return x(d.year); })
+        .y(function (d) { return y(d.value); });
 
-    // console.log(data.movies.movie_release_date);
-    x.domain(d3.extent(data.movies, function (d)  { return d.movie_release_date }));
-    // y.domain(d3.extent(data, function (d) { return d.value; }));
+    x.domain(d3.extent(data, function (d) { return d.year; }));
+    y.domain(d3.extent(data, function (d) { return d.value; }));
 
     g.append("g")
         .attr("transform", "translate(0," + y(0) + ")")
         .call(d3.axisBottom(x));
 
-    // g.append("g")
-    // .call(d3.axisLeft(y));
-
-
-    // g.append("path")
-    //     .datum(data)
-    //     .attr("fill", "none")
-    //     .attr("stroke", "steelblue")
-    //     .attr("stroke-linejoin", "round")
-    //     .attr("stroke-linecap", "round")
-    //     .attr("stroke-width", 1.5)
-    //     .attr("d", line);
-
     g.append("g")
-        .attr("transform", `translate(${margin.left - 5},${height - vt_space + 20})`)
-        .call(d3.axisBottom(xTimeScale))
-        .tickSize(10);
+        .call(d3.axisLeft(y));
+
+    g.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 1.5)
+        .attr("d", line);
 
     g.append("text")
         .attr("x", (width / 2))
-        .attr("y", height - margin.bottom + 20)
+        .attr("y", height - margin.bottom+20)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("text-decoration", "underline")
         .text("Avengers Timeline");
-
+        
     g.append("text")
         .attr("x", (width / 2))
         .attr("y", height - margin.bottom + 20)
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
-        .text("Year");
+        .text("Year"); 
+}
 
-    //create legends on the above line chart
-    //dont create any text fields instead create legend dots or circles on the line chart
+createAvengersTimelineChart(data, ".container", 600, 400, { top: 20, right: 20, bottom: 20, left: 20 });
 
-    g.append("circle")
-        .attr("cx", width - margin.right - 20)
-        .attr("cy", height - margin.bottom - 25)
-        .attr("r", 5)
-        .style("fill", "red");
+//create a json with random values with the columns "year" and "value"
+ // g.append("text")
+    //     .attr("transform", "rotate(-90)")
+    //     .attr("y", 0 - margin.left)
+    //     .attr("x", 0 - (height / 2))
+    //     .attr("dy", "1em")
+    //     .style("text-anchor", "middle")
+    //     .style("font-size", "12px")
+    //     .text("Avengers Count");
 
-    g.append("text")
-        .attr("x", width - margin.right - 20)
-        .attr("y", height - margin.bottom - 20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "12px")
-        .text("Avengers Count");
+    // g.append("text")
+    //     .attr("x", (width / 2))
+    //     .attr("y", height - margin.bottom + 60)
+    //     .attr("text-anchor", "middle")
+    //     .style("font-size", "12px")
+    //     .text("(Year - Avengers Count)");
 
-    g.append("g")
-        .attr("class", "legend legend--ordinal")
-        .attr("transform", "translate(20,20)")
-        .style("font-size", "12px")
-        .style("font-family", "Impact, Charcoal, sans-serif");
 
-    // const nodes = arcGroup.selectAll("nodes")
+
+
+/*  // const nodes = arcGroup.selectAll("nodes")
     //     .data(data.movies)
     //     .enter().append("circle")
     //     .attr("cx", d => xTimeScale(d.movies.movie_release_date)) // x-Axis scale based on movie release date...
@@ -391,119 +527,4 @@ function createAvengersTimelineChart(data = dataList(), container, width, height
     //           arcs.style('stroke-width', stroke_width);
     //         });
 
-    //       });
-}
-
-createAvengersTimelineChart(0, ".container", width, height, margin);
-
-
-
-//create a json with random values with the columns "year" and "value"
- // g.append("text")
-    //     .attr("transform", "rotate(-90)")
-    //     .attr("y", 0 - margin.left)
-    //     .attr("x", 0 - (height / 2))
-    //     .attr("dy", "1em")
-    //     .style("text-anchor", "middle")
-    //     .style("font-size", "12px")
-    //     .text("Avengers Count");
-
-    // g.append("text")
-    //     .attr("x", (width / 2))
-    //     .attr("y", height - margin.bottom + 60)
-    //     .attr("text-anchor", "middle")
-    //     .style("font-size", "12px")
-    //     .text("(Year - Avengers Count)");
-
-
-
-
-
-
-
-
-
-
-
-/* 
-
-
-// function createAvengersTimelineChart(data, container, width, height, margin) {
-//     var svg = d3.select(container).append("svg")
-//         .attr("width", width)
-//         .attr("height", height);
-
-//     var g = svg.append("g")
-//         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-//     var x = d3.scaleLinear()
-//         .range([0, width - margin.left - margin.right]);
-
-//     var y = d3.scaleLinear()
-//         .range([height - margin.top - margin.bottom - 10, 0]);
-
-//     var line = d3.line()
-//         .x(function (d) { return x(d.year); })
-//         .y(function (d) { return y(d.value); });
-
-//     x.domain(d3.extent(data, function (d) { return d.year; }));
-//     y.domain(d3.extent(data, function (d) { return d.value; }));
-
-//     g.append("g")
-//         .attr("transform", "translate(0," + y(0) + ")")
-//         .call(d3.axisBottom(x));
-
-//     g.append("g")
-//         .call(d3.axisLeft(y));
-
-//     g.append("path")
-//         .datum(data)
-//         .attr("fill", "none")
-//         .attr("stroke", "steelblue")
-//         .attr("stroke-linejoin", "round")
-//         .attr("stroke-linecap", "round")
-//         .attr("stroke-width", 1.5)
-//         .attr("d", line);
-
-//     g.append("text")
-//         .attr("x", (width / 2))
-//         .attr("y", height - margin.bottom+20)
-//         .attr("text-anchor", "middle")
-//         .style("font-size", "16px")
-//         .style("text-decoration", "underline")
-//         .text("Avengers Timeline");
-        
-//     g.append("text")
-//         .attr("x", (width / 2))
-//         .attr("y", height - margin.bottom + 20)
-//         .attr("text-anchor", "middle")
-//         .style("font-size", "12px")
-//         .text("Year"); 
-// }
-
-// createAvengersTimelineChart(data, ".container", 600, 400, { top: 20, right: 20, bottom: 20, left: 20 });
-
-// //create a json with random values with the columns "year" and "value"
-//  // g.append("text")
-//     //     .attr("transform", "rotate(-90)")
-//     //     .attr("y", 0 - margin.left)
-//     //     .attr("x", 0 - (height / 2))
-//     //     .attr("dy", "1em")
-//     //     .style("text-anchor", "middle")
-//     //     .style("font-size", "12px")
-//     //     .text("Avengers Count");
-
-//     // g.append("text")
-//     //     .attr("x", (width / 2))
-//     //     .attr("y", height - margin.bottom + 60)
-//     //     .attr("text-anchor", "middle")
-//     //     .style("font-size", "12px")
-//     //     .text("(Year - Avengers Count)");
-
-
-
-
-
-
-
-*/
+    //       }); */

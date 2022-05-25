@@ -1,7 +1,7 @@
 // //create avengers timeline chart using d3.js
 // let container = d3.select(".container");
 
-let width = 1030, height = 640, margin = { top: 20, right: 20, bottom: 20, left: 20 };
+let width = 1030, height = 600, margin = { top: 20, right: 20, bottom: 20, left: 20 };
 let vt_space = 50;
 let r_max = 7;
 
@@ -130,109 +130,27 @@ function xAxis(margin, h, vt_space, d3, xTimeScale) {
 }
 
 function createAvengersTimelineChart(data, container, width, height, margin) {    
-    data = dataList();
-    // var svg = d3.select(container).append("svg")
-    //     .attr("width", width)
-    //     .attr("height", height);
-
-    // var g = svg.append("g")
-    //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-
-    // var x = d3.scaleLinear()
-    //     .domain(d3.extent(data.movies, function (d) { return d.movie_release_date }))
-    //     .range([r_max * 0.6, r_max]);
-
-
-    // d3.select("body").append("h2").text(x);
-    // console.log(x)
-
-    // var y = d3.scaleLinear()
-    //     .range([height - margin.top - margin.bottom - 10, 0]);
-
-
-    // console.log(data.movies.movie_release_date);
-    // x.domain(d3.extent(data.movies, function (d)  { d => console.log(d.movie_release_date) }));
-
-
-    // // g.append("g")
-    // //     .attr("transform", "translate(0," + y(0) + ")")
-    // //     .call(d3.axisBottom(x));
-
-    // // g.attr("transform", `translate(${margin.left - 5},${height - vt_space + 20})`)
-    // //     .call(d3.axisBottom(xTimeScale))
-    // //     .tickSize(10);
-
-    // g.append("circle")
-    //     .attr("cx", width - margin.right - 20)
-    //     .attr("cy", height - margin.bottom - 25)
-    //     .attr("r", 5)
-    //     .style("fill", "red");
-
-  
-
-    // g.append("g")
-    //     .attr("class", "legend legend--ordinal")
-    //     .attr("transform", "translate(20,20)")
-    //     .style("font-size", "12px")
-    //     .style("font-family", "Impact, Charcoal, sans-serif");
-
-
-    var svg = d3.select(container).append("svg")
+    data = dataList();    
+    let svg = d3.select(container)
+        .append("svg")
         .attr("width", width)
         .attr("height", height);
+    
 
-    var g = svg.append("g")
+    let g = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var x = d3.scaleLinear()
+    // console.log((data.movies) =>  (d.movie_length))
+    let x = d3.scaleLinear()
+        // .domain([0, d.movies => d.movie_length])
+        .domain(data.movies, function (d)  { return console.log(d.movie_release_date) /* return d.movie_release_date */ })
         .range([0, width - margin.left - margin.right]);
-
-    var y = d3.scaleLinear()
-        .range([height - margin.top - margin.bottom - 10, 0]);
-
-    var line = d3.line()
-        .x(function (d) { return x(d.year); })
-        .y(function (d) { return y(d.value); });
-
-    x.domain(d3.extent(data.movies, function (d) { return d.movie_release_date }));
-    // y.domain(d3.extent(data, function (d) { return d.value; }));
-
+        
     g.append("g")
-        .attr("transform", "translate(0," + y(0) + ")")
+        .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
 
-    g.append("g")
-        .call(d3.axisLeft(y));
-
-    g.append("path")
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-width", 1.5)
-        .attr("d", line);
-
-    g.append("text")
-        .attr("x", (width / 2))
-        .attr("y", height - margin.bottom+20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text("Avengers Timeline");
-        
-    g.append("text")
-        .attr("x", (width / 2))
-        .attr("y", height - margin.bottom + 20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "12px")
-        .text("Year"); 
-
-
+    
 }
 
-createAvengersTimelineChart(0, ".container", width, height, margin);
-
-
+createAvengersTimelineChart(dataList, ".container", width, height, margin);

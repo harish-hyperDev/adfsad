@@ -109,33 +109,100 @@ function dataList() {
 }
 
 var time = d3.scaleTime()
-            .domain([new Date(2008, 0, 1), new Date(2020, 0, 1)])
-            .range([0,width-margin.left-margin.right]);
-    
-    
+    .domain([new Date(2008, 0, 1), new Date(2020, 0, 1)])
+    .range([0, width - margin.left - margin.right]);
+
+var for_start = d3.scaleTime()
+
 function xAxis(margin, h, vt_space, d3, xTimeScale) {
     return (
         function (g) {
             g
                 .attr("transform", `translate(${margin.left - 5},${h - vt_space + 20})`)
                 .call(d3.axisBottom(xTimeScale)
-                        .tickSize(10)
-                    );
+                    .tickSize(10)
+                );
         }
     )
 }
 
 function sizeScale(movie_length_data) {
     // console.log(r_max);
-    return ( 
-      d3.scaleLinear()
-        // use d3.max and d3.min in domain to get the max and min of the data
-        .domain([0, d3.max(movie_length_data, function (d) { return d.movie_length; })])
-        .range([r_max * 0.6, r_max])
+    return (
+        d3.scaleLinear()
+            // use d3.max and d3.min in domain to get the max and min of the data
+            .domain([0, d3.max(movie_length_data, function (d) { return d.movie_length; })])
+            .range([r_max * 0.6, r_max])
     )
-  }
+}
 
-  // d3.extent(data.movies, function (d) { return d.movie_release_date; })
+function Stone_color() {
+    return (
+        function Stone_color(d) {
+            var stone_color = "black"
+            if (d.stone_id == 1) { var stone_color = "#266EF6" }
+            else if (d.stone_id == 2) { var stone_color = "#FFD300" }
+            else if (d.stone_id == 3) { var stone_color = "#FF0130" }
+            else if (d.stone_id == 4) { var stone_color = "#E429F2" }
+            else if (d.stone_id == 5) { var stone_color = "#12E772" }
+            else if (d.stone_id == 6) { var stone_color = "#FF8B00" }
+            return stone_color;
+        }
+    )
+}
+
+function idTodate(data) {
+    let dict = {};
+    data.movies.forEach(function (n) {
+        dict[n.movie_id] = n.movie_release_date;
+    });
+    return dict;
+}
+
+function buildArc(xTimeScale, idTodate, h, vt_space) {
+    return (
+        function buildArc(d) {
+            
+            // d.source and d.target are the locations in graphData.links
+            // xScale takes a node name and finds its location on the x axis from 0 to width
+            // So start is the location in pixels of the start of the arc
+            // console.log(idTodate[d.target_movie_id])
+            console.log(d)
+            // let start = xTimeScale(idTodate[d.source_movie_id]);
+            // let end = xTimeScale(idTodate[d.target_movie_id]);
+            var arcPath = null;
+            // This code builds up the SVG arc path element
+            if (d.lk_note == "first") {
+                var arcPath = ['M',            // start the path
+                    start, height - vt_space,       // declare the (x,y) of where to start
+                    'A',                     // specify an eliptical curve
+                    (start - end) / 2, ',',    // xradius: height of arc is proportional to start - end
+                    (start - end) / 2,         // yradius 
+                    0, 0, ",",              // rotation of ellipse is 0 along x and y; see arc url for details
+                    start < end ? 1 : 0,     // make all arcs curve above the nodes; see arc documentation
+                    end, height - vt_space]         // declare (x,y) of endpoint
+                    .join(' ');                // convert the bracketed array into a string
+            }
+            else {
+                var arcPath = ['M',            // start the path
+                    start, height - vt_space,       // declare the (x,y) of where to start
+                    'A',                     // specify an eliptical curve
+                    (start - end) / 3, ',',    // xradius: height of arc is proportional to start - end
+                    (start - end) / 3,         // yradius 
+                    0, 0, ",",              // rotation of ellipse is 0 along x and y; see arc url for details
+                    start < end ? 0 : 1,     // make all arcs curve above the nodes; see arc documentation
+                    end, height - vt_space]         // declare (x,y) of endpoint
+                    .join(' ');                // convert the bracketed array into a string
+            }
+
+            //console.log(arcPath)
+            return arcPath;
+        }
+    )
+}
+
+
+// d3.extent(data.movies, function (d) { return d.movie_release_date; })
 function createAvengersTimelineChart(data, container, width, height, margin) {
     data = dataList();
     var svg = d3.select(container).append("svg")
@@ -144,7 +211,7 @@ function createAvengersTimelineChart(data, container, width, height, margin) {
 
     var g = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    
+
     const arcGroup = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -152,11 +219,11 @@ function createAvengersTimelineChart(data, container, width, height, margin) {
         .data(data.movies)
         .enter().append("circle")
         // .attr("cx", d => xTimeScale(d.movie_release_date)) // x-Axis scale based on movie release date...
-        .attr("cx", d => time(d.movie_release_date) ) // x-Axis scale based on movie release date...
+        .attr("cx", d => time(d.movie_release_date)) // x-Axis scale based on movie release date...
         .attr("cy", 350)
         .attr("r", 4) // circle Radius based on movie length in time...
         .attr("fill", "#FFFFFF")
-        .attr("stroke-width", 2)
+        .attr("stroke-width", 3)
         .attr("stroke", "#F0131E")
         .attr("id", d => d.movie_id)
 
@@ -166,18 +233,111 @@ function createAvengersTimelineChart(data, container, width, height, margin) {
     var y = d3.scaleLinear()
         .range([height - margin.top - margin.bottom - 10 - 200, 0]);
 
+
     // var line = d3.line()
     //     .x(function (d) { return x(d.year); })
     //     .y(function (d) { return y(d.value); });
 
-    x.domain(d3.extent(data.movies, function (d) { return d.movie_release_date.getYear()+1900; }));
+
+
+    const rect = arcGroup.selectAll("rect")
+        .data(data.movies)
+        .enter().append("rect")
+        .attr("x", margin.left)
+        .attr("y", height * 0.8)
+        .attr("width", width * 0.4)
+        .attr("height", height * 0.1)
+        .attr("stroke", "#F0131E")
+        .attr("fill", "#FFFFFF")
+        .attr("stroke-width", 3)
+
+    const text = arcGroup.selectAll("nodeLabels")
+        .data(data.movies)
+        .enter().append("text")
+        // .attr("x", (margin.left + width * 0.4) / 2 + 10)
+        // .attr("y", (height * 0.95) + 10)
+        .attr("x", margin.left)
+        .attr("y", height * 0.8)
+        .attr("fill", "#000000")
+        .style("text-anchor", "middle")
+        .style("font-size", 18)        
+        .attr("id", d => d.movie_id)
+        .style("font-family", "Impact, Charcoal, sans-serif")
+
+
+
+    x.domain(d3.extent(data.movies, function (d) { return d.movie_release_date.getYear() + 1900; }));
     // y.domain(d3.extent(data.movies, function (d) { return d.movie_length; }));
 
-    
+
     g.append("g")
         .attr("transform", "translate(0," + 350 + ")")
         .call(d3.axisBottom(x))
-        
+
+    const arcs = arcGroup.selectAll("arcs")
+        .data(data.linkes)
+        .enter().append("path")
+        .attr("d", d => buildArc(d))
+        .style("fill", "none")            // no fill color for the arcs
+        .attr("stroke", d => Stone_color(d))
+        .attr("stroke-width", 3)
+
+
+    arcs
+        // hide the arcs
+        .attr("stroke-dasharray", function () { return this.getTotalLength() })
+        .attr("stroke-dashoffset", function () { return this.getTotalLength() })
+
+        // reveal the arcs   
+        .transition().duration(4000)
+        .attr("stroke-dashoffset", 0)
+        .attr("stroke", "#D3D3D3")  //grey out
+        .attr("stoke-width", 3)
+
+        // after animation for interactions
+        .on("end", function () {
+
+            // When the user mouses over a node,
+            // add interactive highlighting to see connections between nodes  
+
+            nodes.on('mouseover', function (d) {
+
+                //  highlight only the selected node
+                d3.select(this).style("fill", "#F0131E");
+                d3.select(this).style("stroke-width", 3);
+                d3.select(this).style("stroke", "#FFFFFF");
+
+                // display name title
+                rect.style("fill", "#F0131E")
+                text.text(function (text_id) {
+                    console.log(text_id.movie_name)
+                    return text_id.movie_id == d.movie_id ? text_id.movie_name : null
+                });
+
+                // next, style the arcs      
+                // the arc color and thickness stays as the default unless connected to the selected node d
+                // notice how embedding the reference to arcs within nodes.on() allows the code to connect d to arcd
+                // this code iterates through all the arcs so we can compare each to the selected node d --> (node has its own defined above id)                
+
+                arcs.style('stroke', function (arcd) {
+                    // console.log(arcd)
+                    return arcd.source_movie_id === d.movie_id || arcd.target_movie_id === d.movie_id ? Stone_color(arcd) : '#D3D3D3';
+                })
+            });
+
+            nodes.on('mouseout', function (d) {
+                rect.style("fill", "#FFFFFF");
+                nodes.style("fill", "#FFFFFF");
+                nodes.style("stroke-width", 3)
+                nodes.style("stroke", "#F0131E")
+                arcs.style('stroke', '#D3D3D3');
+                arcs.style('stroke-width', 3);
+            });
+
+        });
+
+
+
 
     // g.append("g")
     //     .call(d3.axisLeft(y));
@@ -191,20 +351,7 @@ function createAvengersTimelineChart(data, container, width, height, margin) {
     //     .attr("stroke-width", 1.5)
     //     .attr("d", line);
 
-    g.append("text")
-        .attr("x", (width / 2))
-        .attr("y", height - margin.bottom + 20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text("Avengers Timeline");
-        
-    g.append("text")
-        .attr("x", (width / 2))
-        .attr("y", height - margin.bottom + 20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "12px")
-        .text("Year"); 
+
 }
 
 createAvengersTimelineChart(dataList(), ".container", width, height, { top: 20, right: 20, bottom: 20, left: 20 });

@@ -168,8 +168,8 @@ function buildArc(xTimeScale, idTodate, h, vt_space) {
             // So start is the location in pixels of the start of the arc
             // console.log(idTodate[d.target_movie_id])
             console.log(d)
-            // let start = xTimeScale(idTodate[d.source_movie_id]);
-            // let end = xTimeScale(idTodate[d.target_movie_id]);
+            let start = xTimeScale(idTodate[d.source_movie_id]);
+            let end = xTimeScale(idTodate[d.target_movie_id]);
             var arcPath = null;
             // This code builds up the SVG arc path element
             if (d.lk_note == "first") {
